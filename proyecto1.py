@@ -20,23 +20,21 @@ class AlignmentCalculator():
         self.seq1 = seq1
         self.seq2 = seq2
 
-        # initializing alignment matrix and backtracking matrix
+        # initializing alignment matrix
         self.alignmentMatrix = []
-        self.backtrackMatrix = []
 
         for _ in range(self.height): 
-            self.backtrackMatrix.append([0]*self.width)
             self.alignmentMatrix.append([0]*self.width)
 
         # setting initial values of matrix
         for y in range(self.height): self.alignmentMatrix[y][0] = gapPenalty * y
         for x in range(self.width): self.alignmentMatrix[0][x] = gapPenalty * x
 
-        # automatically filling matrices upon initializaion
-        self.fillMatrices()
+        # automatically filling matrix upon initializaion
+        self.fillMatrix()
 
-    # populates the alignment matrix and backtracking matrix at the same time
-    def fillMatrices(self):
+    # populates the alignment matrix
+    def fillMatrix(self):
         for y in range(1,self.height):
             for x in range(1,self.width):
                 # setting the score value to 1 if seq1[current] = seq2[current]
@@ -47,13 +45,7 @@ class AlignmentCalculator():
                 topScore = self.alignmentMatrix[y-1][x]
 
                 # deciding which value to put into the current cell
-                scores = (leftScore + self.gapPenalty, topScore + self.gapPenalty, topLeftScore + score)
-                maxIndex = scores.index(max(scores))
-                value = scores[maxIndex]
-
-                # if maxIndex is 0, then it is not a gap, therefore
-                # the index is set to true in the backtrackMatrix
-                self.backtrackMatrix[y][x] = 1 if maxIndex == 2 else 0
+                value = max(topScore + self.gapPenalty, leftScore + self.gapPenalty, topLeftScore + score)
                 self.alignmentMatrix[y][x] = value
     
     # returns a tuple containing two strings. seq1 aligned and seq2 aligned.
@@ -64,28 +56,25 @@ class AlignmentCalculator():
         y = self.height - 1
         x = self.width - 1
 
-        # iterating backwards through backtracking matrix
+        # iterating backwards through the matrix matrix
         while x > 0 or y > 0:
-                # when there is no gap, just append the next letter in the sequence
-            if x > 0 and y > 0 and self.backtrackMatrix[y][x] == 1:
-                alignedSeq1.append(self.seq1[x-1])
-                alignedSeq2.append(self.seq2[y-1])
-                x -= 1
-                y -= 1
-                continue
+            currentScore = self.alignmentMatrix[y][x]
 
-            # if there is a gap, choose the path with largest value between top and left.
-            # if top and left are equal, go left
-            topVal = self.alignmentMatrix[y-1][x]
-            leftVal = self.alignmentMatrix[y][x-1]
-
-            if x > 0 and leftVal >= topVal:
+            # trying to see if the calculation using the left cell resulted in the max value
+            if self.alignmentMatrix[y][x-1] + self.gapPenalty == currentScore:
                 alignedSeq1.append(self.seq1[x-1])
                 alignedSeq2.append('-')
                 x -= 1
-            else: 
+            # trying to see if the calculation using the top cell resulted in the max value
+            elif self.alignmentMatrix[y-1][x] + self.gapPenalty == currentScore:
                 alignedSeq2.append(self.seq2[y-1])
                 alignedSeq1.append('-')
+                y -= 1
+            # when there is no gap, just append the next letter in the sequence
+            else:
+                alignedSeq1.append(self.seq1[x-1])
+                alignedSeq2.append(self.seq2[y-1])
+                x -= 1
                 y -= 1
         
         # reversing the list to get the proper alignment and joining all the values into a string
