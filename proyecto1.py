@@ -21,10 +21,7 @@ class AlignmentCalculator():
         self.seq2 = seq2
 
         # initializing alignment matrix
-        self.alignmentMatrix = []
-
-        for _ in range(self.height): 
-            self.alignmentMatrix.append([0]*self.width)
+        self.alignmentMatrix = [[0]*self.width for _ in range(self.height)]
 
         # setting initial values of matrix
         for y in range(self.height): self.alignmentMatrix[y][0] = gapPenalty * y
