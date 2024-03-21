@@ -7,7 +7,7 @@ def printMatrix(matrix):
 # Class for a calculator that generates an alignment matrix for the
 # input sequences and generates an alignment for them
 class AlignmentCalculator():
-    # initializes all variables for the calculator and
+    # initializes all variables for the calculator
     # generates a matrix with only the initial values.
     def __init__(self, seq1, seq2, matchScore=1, mismatchScore=-1, gapPenalty=-2):
         # setting up variables as well as width and height of alignment matrix
@@ -103,9 +103,11 @@ def main():
     sequencePairs = getSequencePairs()
     
     # computing and printing the alignment values for all the sequences
-    for sequences in sequencePairs:
-        if len(sequences) < 2: continue
-        seq1, seq2 = sequences
+    for pair in sequencePairs:
+        # Sometimes, extra line breaks cause issues because it is seen as
+        # another sequence pair, this fixes that by ignoring empty values.
+        if len(pair) < 2: continue
+        seq1, seq2 = pair
 
         calculator = AlignmentCalculator(seq1, seq2)
 
