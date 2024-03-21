@@ -40,7 +40,7 @@ class AlignmentCalculator():
 
         return alignmentMatrix
     
-    # returns a tuple containing two strings the alignment for seq1 and for seq2
+    # returns a tuple containing two strings. the alignment for seq1 and for seq2
     def generateAlignments(self, seq1, seq2, matrix):
         alignedSeq1 = []
         alignedSeq2 = []
